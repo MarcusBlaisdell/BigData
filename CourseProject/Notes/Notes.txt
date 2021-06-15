@@ -1,0 +1,130 @@
+Join operators:
+    
+Tuple-Based nested-loop join:
+
+For each tuple s in S DO
+    for each tuple r in R DO
+        IF r and s join to make a tuple t, THEN
+            output t;
+
+block nested join:
+
+Open (){
+    R.Open ();
+    S.Open ();
+    s := S.GetNext ();
+}
+
+GetNext () {
+    REPEAT {
+        r := R.GetNext();
+        IF (r = NotFound) {/* R is exhausted for the current s */
+            R.Close ();
+            s := S.GetNext();
+            IF (s = NotFound) RETURN NotFound; /* both R and S exhausted */
+            R.Open ();
+            r := R.GetNext ();
+        }
+    }
+    UNTIL (r and s join);
+    RETURN the join of r and s;
+}
+
+Close () {
+    R.Close ();
+    S.Close ();
+}
+
+
+sort-merge join:
+
+1. Create sorted sublists of size M, using Y as the sort key, for both R and S.
+2. Bring the first block of each sublist into a buffer; we assume there are no more than M sublists in all.
+3. Repeatedly find the least Y-value y among the first available tuples of all the sublists. Identify all the tuples of both relations that have Y-value y, perhaps using some of the M available buffers to hold them, if there are fewer than M sublists. Output the join of all tuples from R with all tuples from S that share this common Y-value. If the buffer for one of the sublists is exhausted, then replenish it from disk. 
+
+hash-join:
+
+To compute R Us S, we hash both R and S to M - 1 buckets each.
+We then take the set-union of Ri with Si for all i and output the result. 
+Notice that if a tuple t appears in both R and S, then for some i we shall find t in both Ri and Si,
+Thus, when we take the union of these two buckeeets, we shall output only one copy of t, and there is no possibility of introducting duplicates into the result.
+For Ub the simple bag-union algorithm is preferable to any other approach for that operation.
+
+
+
+graphs
+
+approximate query processing
+    Haar decomposition
+
+parallel data models
+    speed-up / scale-up
+
+MapReduce:
+High level programming system that allows many important database processes to be written simply.
+
+The user writes code for two functions: map, and reduce.
+A master controller divides the input data into chunks and assigns different processors to execute the map function on each chunk.
+Other processors, are then assigned to perform the reduce function on pieces of the output from the map function.
+
+The Map function: 
+Input:
+<k1, v1>
+
+Output: 
+list (<k2, v2>)
+
+Reduct function:
+Input:
+<k2, list(v2)>
+
+Output:
+list (<k3, v3>)
+
+
+
+Graph parallel models
+
+noSQL - 4 types:
+1. Key value: Data is stored as key-value pairs. It is a table where each value is stored with an associated key. Records are located by key and the values are not searchable/referencable. If a hashing method is used with the key to store the data, access can be made much faster. The value can be any of a number of datatypes including lists, images, XML documents.
+
+2. Document: Data is stored as key-value pairs however, the values are searchable. Values are encoded using a text coding scheme like XML or JSON. The values are not required to use the same schema and this method supports dynamic schema as fields can be added and deleted. This system supports searches by value field name, partial value updates that can update partial fields in the value set, and partial data retrieval.
+
+3. Column-Family: This system groups related columns together into column-families and stores the data like a traditional RDBMS. They can provide faster access by storing the column-families in separate physical files.
+
+4. Graph: Data is stored as nodes, essentially as rows in a table. The nodes are the vertices of the graph. Edges are stored as joins between nodes. Each node can be a key-value pair. Edges can also contain key-value pairs. Nodes can have multiple edges, each with a different key-value pair. Queries are typically performed by node traversal to find interconnected nodes based on the search attributes.
+
+
+ACID
+
+Atomicity: The database is indivisible, it is regarded as a complete unit and any update must be of the entire database or of no update.
+
+Consistency: Enforces a constraint on the database schema that only data that conforms to the schema can be written to the database.
+
+Isolation: Transaction results are not accessible by other operations until they are complete. Data is locked out by the system while updates are performed so any other operation is not able to act on the same data at the same time.
+
+Durability: Transaction results are made permanent, the data maintains its state or persists after it is updated in case of power failure or other events.
+
+
+BASE
+
+Basically Available
+Soft state
+Eventual consistency
+
+Basically Available means that the system will always acknowledge a request either as a success or failure.
+
+
+Soft state means thta the data a user requests may be in the state of being modified by another operation and therfore could be different if a subsequent request is made.
+
+Eventual consistency means that if multiple reads and writes are being performed simultaneously, searches will not return consistent results and the data is only consistent after changes have proagated to all nodes.
+
+
+CAP theory
+
+Column store
+
+Indexing
+Duplicate elimination
+Grouping
+

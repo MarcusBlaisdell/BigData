@@ -1,0 +1,11 @@
+The mysql documentation is super helpful.
+
+Loading in data from local file
+	https://dev.mysql.com/doc/refman/5.6/en/load-data.html
+Video tutorial notes on a bunch of common commands
+	http://www.newthinktank.com/2014/08/mysql-video-tutorial/
+Some basic commands
+	https://www.codecademy.com/articles/sql-commands
+Granting privileges for the new user I had to make to get vscode working
+	https://www.a2hosting.com/kb/developer-corner/mysql/managing-mysql-databases-and-users-from-the-command-line
+

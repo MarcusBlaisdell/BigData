@@ -1,0 +1,230 @@
+PART-A
+
+# NETWROK AGGREGATION
+
+1. Degree distribution:
+	// Undirected :
+	MATCH (n:Video)-[r:RELATED_TO]-(:Video) 
+	WITH n, COUNT(r) AS degree
+	WITH degree, COUNT(degree) AS frequency	
+	RETURN degree,frequency
+	ORDER BY frequency DESC LIMIT 10
+	
+	// In-Degree:
+	MATCH (n:Video)<-[r:RELATED_TO]-(:Video) 
+	WITH n, COUNT(r) AS in_degree
+	WITH in_degree, COUNT(in_degree) AS frequency	
+	RETURN in_degree,frequency
+	ORDER BY frequency DESC LIMIT 10
+
+	// Out-Degree:
+	MATCH (n:Video)-[r:RELATED_TO]->(:Video) 
+	WITH n, COUNT(r) AS out_degree
+	WITH out_degree, COUNT(out_degree) AS frequency	
+	RETURN out_degree,frequency
+	ORDER BY frequency DESC LIMIT 10
+
+2. Average Degree
+	// Average undirected degree: DONE
+	MATCH (n:Video)-[r:RELATED_TO]-(:Video) 
+	WITH n, COUNT(r) AS degree
+	RETURN avg(degree) AS average_undirected_degree
+	
+	// Average in-degree
+	MATCH (n:Video)<-[r:RELATED_TO]-(:Video) 
+	WITH n, COUNT(r) AS degree
+	RETURN avg(degree) AS average_in_degree
+	
+	// Average out-degree
+	MATCH (n:Video)-[r:RELATED_TO]->(:Video) 
+	WITH n, COUNT(r) AS degree
+	RETURN avg(degree) AS average_out_degree
+	
+3. Maximum Degree
+
+	// Maximum undirected degree
+	MATCH (n:Video)-[r:RELATED_TO]-(:Video) 
+	WITH n, COUNT(r) AS degree
+	RETURN MAX(degree) AS maximum_undirected_degree
+	
+	// Maximum in-degree
+	MATCH (n:Video)<-[r:RELATED_TO]-(:Video) 
+	WITH n, COUNT(r) AS degree
+	RETURN MAX(degree) AS maximum_in_degree
+	
+	// Maximum out-degree
+	MATCH (n:Video)-[r:RELATED_TO]->(:Video) 
+	WITH n, COUNT(r) AS degree
+	RETURN MAX(degree) AS maximum_out_degree
+	
+4. Minimum Degree
+
+	// Minimum undirected degree
+	MATCH (n:Video)-[r:RELATED_TO]-(:Video) 
+	WITH n, COUNT(r) AS degree
+	RETURN MIN(degree) AS minimun_undirected_degree
+	
+	// Minimum in-degree
+	MATCH (n:Video)<-[r:RELATED_TO]-(:Video) 
+	WITH n, COUNT(r) AS degree
+	RETURN MIN(degree) AS minimun_in_degree
+	
+	// Minimum out-degree
+	MATCH (n:Video)-[r:RELATED_TO]->(:Video) 
+	WITH n, COUNT(r) AS degree
+	RETURN MIN(degree) AS minimun_out_degree
+	
+# - Categorized statistics: frequency of videos partitioned by a search condition: categorization, size of videos, view count, etc.	
+1. Category wise distribution :
+	MATCH (n:Category)-[r:HAS_CATEGORY]-(:Video) 
+	WITH n, COUNT(r) AS video_count
+	RETURN n AS Category, video_count 
+    ORDER BY video_count DESC LIMIT 10
+
+// QUERY 2
+	MATCH (n:Category)-[r:HAS_CATEGORY]-(:Video) 
+	WITH n, COUNT(r) AS video_count
+	RETURN n.name AS Category, video_count 
+    ORDER BY video_count DESC
+
+2. Size(length) wise distribution
+	MATCH (n:Video) 
+	WITH n.length AS length, COUNT(n) AS video_count
+	RETURN length, video_count 
+    ORDER BY video_count DESC LIMIT 10
+
+3. View count wise distribution :
+	MATCH (n:Video) 
+	WITH n.views AS views, COUNT(n) AS video_count
+    WHERE views IS NOT NULL
+	RETURN views, video_count
+    ORDER BY views DESC
+
+4. 	Video Rate wise distribution
+	MATCH (n:Video) 
+	WITH n.rate AS rate, COUNT(n) AS video_count
+    WHERE rate IS NOT NULL
+	RETURN rate, video_count
+    ORDER BY rate DESC
+
+5. 	Video Rating count wise distribution
+	MATCH (n:Video) 
+	WITH n.ratings AS ratings, COUNT(n) AS video_count
+    WHERE ratings IS NOT NULL
+	RETURN ratings, video_count
+    ORDER BY ratings DESC
+	
+6. Video comments count wise distribution
+	MATCH (n:Video) 
+	WITH n.comments AS comments, COUNT(n) AS video_count
+    WHERE comments IS NOT NULL
+	RETURN comments, video_count
+    ORDER BY comments DESC
+	
+7. Users upload count wise distribution
+	MATCH (n:User)-[r:UPLOADED]-(v:Video) 
+	WITH n.username AS User, COUNT(v) AS uploaded_videos_count
+	RETURN User, uploaded_videos_count
+    ORDER BY uploaded_videos_count DESC
+
+PART-B: 
+
+# TOP K Queries:
+1. TOP K Categories
+	MATCH (n:Category)-[r]-(:Video) 
+	WITH n, COUNT(r) AS video_count
+	RETURN n AS Category, video_count 
+	ORDER BY video_count DESC
+	LIMIT 5
+
+2. Top k rated videos
+	MATCH (n:Video) 
+	RETURN n.id as video_id, n.ratings as ratings
+	ORDER BY ratings DESC
+	LIMIT 5
+
+3. Top k most popular videos
+    MATCH (n:Video)
+    WITH n.views AS views, COUNT(n) AS video_count
+    WHERE views IS NOT NULL
+    RETURN views, video_count
+    ORDER BY views DESC
+    LIMIT 5
+
+//version 1: show rating and video count
+	MATCH (n:Video) 
+	WITH n.ratings AS ratings, COUNT(n) AS video_count
+    	WHERE ratings IS NOT NULL
+	RETURN ratings, video_count
+    	ORDER BY ratings DESC
+	LIMIT 5
+	
+3. Top k most popular videos
+	MATCH (n:Video) 
+	WITH n.views AS views, COUNT(n) AS video_count
+    WHERE views IS NOT NULL
+	RETURN views, video_count
+    ORDER BY views DESC
+	LIMIT 5
+
+# Range queries: 
+1. Find all videos in categories X with duration within a range [t1, t2]
+	MATCH (n:Category)-[r:HAS_CATEGORY]-(v:Video) 
+	WHERE v.length >= 300 AND v.length <= 600
+	WITH n, COUNT(r) AS video_count
+	RETURN n AS Category, video_count 
+	ORDER BY video_count DESC
+	LIMIT 10
+
+	MATCH (c:Category)-[r:HAS_CATEGORY]-(v:Video)
+	WHERE c.name= "Comedy" AND v.length IN RANGE(300, 600)
+	RETURN v as Videos
+	
+	MATCH (c:Category)-[r:HAS_CATEGORY]-(v:Video)
+	WHERE c.name= "Comedy" AND v.length >= 300 AND v.length <= 600
+	RETURN v as Videos
+  
+	MATCH (c:Category{name: "Comedy"})-[r:HAS_CATEGORY]-(v:Video)
+	WHERE v.length >= 300 AND v.length <=600
+	RETURN v as Videos
+	
+2. Find all videos with size in range [x,y].	
+	// we don't have size property  so using length, you can use any here
+	MATCH (v:Video)
+	WHERE v.length IN RANGE(300, 600)
+	RETURN v as Videos
+
+3. User recommendation pattern
+	MATCH (user:User {username:"TheReceptionist" })-[u:UPLOADED]-(user_video:Video)
+	MATCH (user_video)-[:RELATED_TO]-(related_video)-[:HAS_CATEGORY]-(:Category{name:"Comedy"})
+	WHERE related_video.views IS NOT NULL AND NOT (user)-[:UPLOADED]-(related_video) 
+	RETURN related_video
+	ORDER BY related_video.views DESC
+	LIMIT 10
+
+	MATCH (user:User {username:"TheReceptionist" })-[u:UPLOADED]-(user_video:Video)
+	MATCH (user_video)-[:RELATED_TO]-(related_video)
+	WHERE related_video.views IS NOT NULL AND NOT (user)-[:UPLOADED]-(related_video) 
+	RETURN related_video
+	ORDER BY related_video.views DESC
+	LIMIT 10
+----------------------------------
+
+./bin/cypher-shell "Match (n:Category) return n.name as count,id(n) as id" -a localhost:11004 -u neo4j -p 3 > /Users/linhnguyen/Desktop/youtubeData/result.txt
+
+
+/ command to run cypher query from terminal: I.e. using cypher shell
+./bin/cypher-shell "MATCH (n:Video) 
+	WITH n.views AS views, COUNT(n) AS video_count
+    WHERE views IS NOT NULL
+	RETURN views, video_count" -a localhost:11004 -u neo4j -p 3 > /Users/linhnguyen/Desktop/youtubeData/result.txt
+
+/ command to run cypher query from terminal: I.e. using cypher shell
+./bin/cypher-shell "MATCH (c:Category)
+		-[r:HAS_CATEGORY]-(v:Video)
+	WHERE v.length IN RANGE(300, 600)
+	RETURN v" -a localhost:11004 -u neo4j -p 3 > /Users/linhnguyen/Desktop/youtubeData/result.txt
+
+
+
+

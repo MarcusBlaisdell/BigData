@@ -1,0 +1,9 @@
+//  Find top k most influence Videos in Youtube network based on pagerank results
+MATCH (n:Video) RETURN n ORDER BY n.pagerank DESC LIMIT 25
+
+// To get the specific fields of the top Videos based on pagerank results
+MATCH (n:Video) RETURN n.id AS VIDEO_ID, n.pagerank AS Pagerank_Score, n.views AS Views, n.ratings AS Ratings, n.comments AS Comments, n.age AS Age, n.length AS Length  ORDER BY n.pagerank DESC LIMIT 25
+
+// If two or more videos have same pagerank then order them by views count 
+MATCH (n:Video) RETURN n.id AS VIDEO_ID, n.pagerank AS Pagerank_Score, n.views AS Views, n.ratings AS Ratings, n.comments AS Comments, n.age AS Age, n.length AS Length  ORDER BY n.pagerank,n.views DESC LIMIT 25
+

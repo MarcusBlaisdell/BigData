@@ -1,0 +1,26 @@
+==
+install mysql server:
+sudo apt-get update
+sudo apt-get install mysql-server
+
+== 
+install connect/C++:
+
+sudo apt install libmysqlcppconn-dev
+
+==
+start mysql server:
+
+systemctl start mysql
+
+==
+launch mysql:
+
+/usr/bin/mysql -u root -p
+
+==
+compile mysql connector code:
+
+sudo g++ -Wall -I/usr/include/cppconn -o testapp tester.cpp -L/usr/lib -lmysqlcppconn
+
+

@@ -1,0 +1,14 @@
+≠//--------------------------------
+// Page Rank Algorithm
+//--------------------------------
+// Query to calculate the pagerank for each video and write back the results as a property of video (property named "pagerank")
+// This query will return only the stats for this operation and result of the pagerank will be written in the property of a video
+// We are writing the result back to the property because we don't know pagerank calculation is a highly computational algorithm 
+// and the result is not going to change as our database has fixed number of videos.
+// We will need to run this if we add more Videos or RELATED_TO relationships between videos
+
+CALL algo.pageRank('Video', 'RELATED_TO',
+  {iterations:20, dampingFactor:0.85, write: true,writeProperty:"pagerank"})
+YIELD nodes, iterations, loadMillis, computeMillis, writeMillis, dampingFactor, write, writeProperty
+
+//--------------------------------

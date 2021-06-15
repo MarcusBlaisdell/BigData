@@ -1,0 +1,26 @@
+Project requirements:
+
+1. Efficiently report the following statistics:
+    a. Degree distribution:
+        i. Average in-degree / out-degree
+        ii. Max, Min in-degree / out-degree
+    b. Categorized:
+        i. Category frequency
+        ii. Video size frequency
+        iii. view count frequency
+
+2. Search:
+    a. Top K categories a video is uploaded to
+    b. Top K rated videos
+    c. Top K most popular videos
+    d. Range queries:
+        i. All videos with a duration within a range [t1, t2]
+    e. User identification in recommendation patterns:
+        i. find all occurrences of a specified subgraph pattern connecting users and videos with a specified search condition
+
+3. Influence analysis:
+    a. Use PageRank algorithms to compute scores
+        i. effectively, find the top K most influential videos
+            - check the properties of these videos, what can we learn from/about them?
+
+

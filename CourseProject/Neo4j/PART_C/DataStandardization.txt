@@ -1,0 +1,27 @@
+//--------------------------------
+// Data Standardization : Convert the properties in required format and Remove the noise
+//--------------------------------
+
+// CONVERT THE DATA IN REQUIRED FORMAT:
+// CONVERT SOME PROPERTIES TO INTEGER AND SOME TO FLOAT
+// ALSO THERE ARE SOME VIDEOS WITH NO DATA THAT RESULT IN ERROR AND NULL VALUES REPLACE THESE NULL VALUES BY 0 (ZERO).
+
+call apoc.periodic.iterate('MATCH (v:Video) RETURN v','
+WITH v 
+SET
+	v.age = (CASE WHEN v.age IS NOT NULL THEN toInteger(v.age) ELSE 0 END ), 
+	v.length = (CASE WHEN v.length IS NOT NULL THEN toInteger(v.length) ELSE 0 END ), 
+	v.views = (CASE WHEN v.views IS NOT NULL THEN toInteger(v.views) ELSE 0 END ),
+	v.rate = (CASE WHEN v.rate IS NOT NULL THEN toFloat(v.rate) ELSE 0 END ), 
+	v.ratings = (CASE WHEN v.ratings IS NOT NULL THEN toInteger(v.ratings) ELSE 0 END ), 
+	v.comments = (CASE WHEN v.comments IS NOT NULL THEN toInteger(v.comments) ELSE 0 END ), 
+	v.comments = toInteger(v.comments)
+', {batchSize:10000, parallel:true})
+
+// DELETE SELF RELATED CONNECTIONS: SOME VIDEOS APPEAR IN RELATED 
+// FIELD OF ITSELF SO NEED TO REMOVE THESE TO INSURE CORRECT RESULTS OF GRAPH ALGORITHMS
+
+MATCH (v:Video)-[r:RELATED_TO]-(v:Video)
+DELETE r
+
+//--------------------------------
